@@ -14,7 +14,7 @@ The lecture materials are in the included PDF. These are written in Macedonian, 
 
 License
 -------
-All the software is distributed with the GNU General Public License v.3, given in `code/LICENSE`. The lecture materials are distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-SA 4.0) license (https://creativecommons.org/licenses/by-sa/4.0/). The sound samples `zvona.wav` and `zvona2.wav` are taken from [`http://freesound.org`](http://freesound.org), and the other are released under Creative Commons Attribution 4.0 (CC BY 4.0) license (http://creativecommons.org/licenses/by/4.0/).
+All the software is distributed with the GNU General Public License v.3, given in `code/LICENSE`. The lecture materials are distributed under the [Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) license. The sound samples `zvona.wav` and `zvona2.wav` are taken from [`http://freesound.org`](http://freesound.org), and the other are released under the [Creative Commons Attribution 4.0 (CC BY 4.0)](http://creativecommons.org/licenses/by/4.0/)  license.
 
 
 
