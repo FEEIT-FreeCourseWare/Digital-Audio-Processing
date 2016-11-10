@@ -3,7 +3,7 @@ November 2016
 
 These are the materials from the course Digital Audio Systems, taught in the 6th semester at the undergraduate level at the [Faculty of Electrical Engineering and Information Technologies](http://feit.ukim.edu.mk), [Ss Cyril and Methodius University of Skopje](http://ukim.edu.mk/), Macedonia. 
 
-The course focuses on the analysis, processing, compression and synthesis of digital audio signals. All the algorithms are implemented using the Python 2.7, and using the following modules: math, numpy, matplotlib, scipy, and scikits.talkbox. The text goes over the whole installation procedure.
+The course focuses on the analysis, processing, compression and synthesis of digital audio signals. All the algorithms are implemented using Python 2.7, and using the following modules: math, numpy, matplotlib, scipy, and scikits.talkbox. The whole installation procedure to get going is documented in the lecture materials.
 
 
 Content
