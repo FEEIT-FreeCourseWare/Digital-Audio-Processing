@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 by Branislav Gerazov
+# Copyright 2017 by Branislav Gerazov
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2016
+#   Branislav Gerazov, March 2017
 
 """
 Digital Audio Systems
@@ -22,15 +22,23 @@ import os
 from math import pi
 import sys
 
-#%% generate sine tone
-print 'sys.argv : ', sys.argv, 'size is ', len(sys.argv)
-f = int(sys.argv[1])
+#%% input defined using terminal
+#print 'sys.argv : ', sys.argv, 'size is ', len(sys.argv)
+#f = int(sys.argv[1])
+
+#%% input defined in script
+f = 200
+
+#%% generate sound
 fs = 44100
 t = np.arange(0, 2, 1/fs)
 sine = np.sin(2*pi*f*t)
 
-#%% save to WAV file
-wavfile.write('sinus.wav',fs,np.array(sine * 2**15, dtype='int16'))
+#%% save and play
+wavfile.write('audio/sinus.wav', fs,
+              np.array(sine * 2**15, dtype='int16'))
+os.system('play audio/sinus.wav')
 
-#%% play file
-os.system('play sinus.wav')
+#%%
+import das
+das.get_sound(fs=48000, f=20000)
