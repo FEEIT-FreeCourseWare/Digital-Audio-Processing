@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 by Branislav Gerazov
+# Copyright 2017 - 2019 by Branislav Gerazov
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2017
+#   Branislav Gerazov, March 2017 - 2019
 
 """
 Digital Audio Systems
@@ -16,83 +16,69 @@ Excercise 03: Spectrogram.
 @author: Branislav Gerazov
 """
 
-from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
+from scipy import signal as sig
 import os
-from scipy import signal as sig 
 import das
 
-#%% load audio
+# %% load audio
 fs, wav = wavfile.read('audio/zvona2.wav')
-#os.system('play audio/zvona2.wav')
+os.system('play audio/zvona2.wav')
 wav = wav / 2**15
 t = np.arange(0, wav.size/fs, 1/fs)
 f, wav_amp = das.get_spectrum(fs, wav, plot=True)
 
-#%% aliasing
-# wavfile.write('audio/Zvona_alias.wav', fs/4, 
+# %% aliasing
+# wavfile.write('audio/Zvona_alias.wav', fs/4,
 #               np.array(wav[0:-1:4] * 2**15, dtype='int16'))
 
-#%% extract spectrogram
+# %% extract spectrogram
 # define window
-#Nt = .050  # ms
-#N = int(Nt*fs)
-N = 2048  # 2**11
-Nh = int(N/2)
-H = Nh  # hop size
-win = sig.get_window('hamming',N)
-
-# windowing
-poz = Nh  # pozicija na sredinata na prozorecot
-pad = np.zeros(Nh)
-wav_pad = np.r_[pad, wav, pad]
-while poz < wav_pad.size-Nh:
-    frame = wav_pad[poz-Nh : poz+Nh] * win
-    f_frame, frame_spec = das.get_spectrum(frame, fs)
-    if poz == Nh:
-        frames =frame[:,np.newaxis]
-        frames_spec = np.array([frame_spec]).T
+# t_win = .050  # ms
+# n_win = int(t_win * fs)
+n_win = 2048
+win = sig.get_window('hamming', n_win)
+n_half = n_win // 2
+n_hop = n_half
+# pad signal
+pad = np.zeros(n_half)
+wav_pad = np.concatenate((pad, wav, pad))
+# loop
+pos = 0
+spectrogram = None
+while pos <= wav_pad.size - n_win:
+    frame = wav_pad[pos: pos+n_win]
+    f_frame, frame_spec = das.get_spectrum(fs, wav, n_fft=n_win)
+    frame_spec = frame_spec[:, np.newaxis]
+    if spectrogram is None:
+        spectrogram = frame_spec
     else:
-        frames = np.hstack((frames, frame[:,np.newaxis]))
-        frames_spec = np.hstack((frames_spec,\
-                      np.array([frame_spec]).T))
-    poz += H                      
+        spectrogram = np.concatenate((spectrogram, frame_spec), axis=1)
+    pos += n_hop
+n_frame = spectrogram.shape[1]
+t_frame = np.arange(n_frame) * n_hop/fs
 
-no_frames = frame_specs.shape[1]
-t_frames = np.arange(no_frames) * H / fs
-
-#%% plot frames 
+# %% plot frames
 plt.figure()
-plt.imshow(np.abs(frames), 
-           extent=[0, t_frames[-1], 0, f_frame[-1]],
-           aspect='auto',
-           origin='lower',
-           vmin=0,
-           vmax=.25,
-           cmap='viridis')
-plt.colorbar()
-
-#%% plot spectrogram
-plt.imshow(frames_spec, aspect='auto', 
-           origin='lower', 
-           extent=[0, t[-1], 0, f_frame[-1]],
-           vmin=-100,vmax=0, 
+plt.imshow(spectrogram, aspect='auto', origin='lower',
+           extent=[0, t_frame[-1], 0, f_frame[-1]],
+           vmin=-100, vmax=0,
            cmap='viridis')
 cbar = plt.colorbar()
 plt.xlabel('Time [s]')
 plt.ylabel('Frequency [Hz]')
 cbar.ax.set_ylabel('Amplitude [dB]')
-plt.axis([0, t[-1], 0, 10000])
+# plt.axis([0, t[-1], 0, 10000])
 
-#%% 
-das.get_spectrogram(fs, wav, 256, win='hann')
-das.get_spectrogram(fs, wav, 2048, win='hann')
-das.get_spectrogram(fs, wav, 16384, win='hann')
+# %% spectrograms for different n_win
+das.get_spectrogram(fs, wav, 256, win_type='hann')
+das.get_spectrogram(fs, wav, 2048, win_type='hann')
+das.get_spectrogram(fs, wav, 16384, win_type='hann')
 
-#%% 
-das.get_spectrogram(fs, wav, 2048, win='boxcar')
-das.get_spectrogram(fs, wav, 2048, win='hann')
-das.get_spectrogram(fs, wav, 2048, win='hamming')
-das.get_spectrogram(fs, wav, 2048, win='blackmanharris')
+# %% spectrograms for different win_type
+das.get_spectrogram(fs, wav, 2048, win_type='boxcar')
+das.get_spectrogram(fs, wav, 2048, win_type='hann')
+das.get_spectrogram(fs, wav, 2048, win_type='hamming')
+das.get_spectrogram(fs, wav, 2048, win_type='blackmanharris')

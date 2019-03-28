@@ -1,9 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2016 by Branislav Gerazov
 #
-# See the file LICENSE for the license associated with this software.
+# See the file LICEnSE for the license associated with this software.
 #
 # Author(s):
 #   Branislav Gerazov, March 2016
@@ -15,36 +15,34 @@ Excercise 03: Windows.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy import fftpack as fp
-from scipy import signal as sig 
+from scipy import fftpack as fft
+from scipy import signal as sig
 
-#%% plot window and its spectrum
+# %% plot window and its spectrum
 # Hamming
-M = 512  # analysis range
-N = 64  # window length 
-Mh = M/2
-Nh = N/2
+m = 512  # analysis range
+n = 64  # window length
+Mh = m/2
+nh = n/2
 
-w = np.zeros(M)
-w[Mh-Nh:Mh+Nh] = sig.get_window('hamming', N)
-W = fp.fft(w, M)
-Wamp = np.abs(W)/N
+win = np.zeros(m)
+win[Mh-nh:Mh+nh] = sig.get_window('hamming', n)
+win_spec = fft.fft(win, m)
+win_spec = np.abs(win_spec) / n
 eps = np.finfo(float).eps
-Wamp[np.where(Wamp < eps)] = eps
-Wlog = 20*np.log10(Wamp)
-Wlog -= np.max(Wlog)
-Wshift = fp.fftshift(Wlog)
+win_spec[win_spec < eps] = eps
+win_spec = 20 * np.log10(win_spec)
+win_spec = fft.fftshift(win_spec)
 
-#%% plot 
-plt.figure(figsize=(12,4))
+# %% plot
+plt.figure(figsize=(12, 4))
 plt.subplot(121)
-plt.plot(w)
-plt.axis([0, M, 0,1.1])  #[xmin, xmax, ymin, ymax]
+plt.plot(win)
+plt.axis([0, m, 0, 1.1])  # [xmin, xmax, ymin, ymax]
 plt.grid()
 plt.subplot(122)
-plt.plot(Wshift)
+plt.plot(win_spec)
 plt.grid()
-plt.axis([0, M, -100,10])  #[xmin, xmax, ymin, ymax]
+plt.axis([0, m, -100, 10])

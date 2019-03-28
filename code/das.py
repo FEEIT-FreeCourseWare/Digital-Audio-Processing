@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 by Branislav Gerazov
+# Copyright 2017 - 2019 by Branislav Gerazov
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2017
+#   Branislav Gerazov, Mar 2017 - 2019
 
 """
 Digital Audio Systems
@@ -15,13 +15,13 @@ Utility functions.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
 from scipy.io import wavfile
-import os
-from scipy import fftpack as fftp
+from scipy import fftpack as fft
 from scipy import signal as sig
+import os
+
 
 def normalise(wav, level_dB=0):
     """
@@ -33,186 +33,179 @@ def normalise(wav, level_dB=0):
         Input audio.
     level_dB : int
         Level in dB.
-        
-    Returns 
+
+    Returns
     ----------
     wav_norm : ndarray
         Normalised audio.
-    """    
+    """
     level = 10**(level_dB/20)
     wav_norm = wav / np.max(np.abs(wav)) * level
     return wav_norm
 
-def get_sound(fs=16000, T=2, f=200, level=-3,
-              plot=False, play=True):
+
+def get_sound(fs=16000, t=2, f=200, level=-3, plot=False, play=True):
     """
     Generate sine tone.
-    
+
     Parameters
     ----------
     fs : int
         Sampling rate.
-    T : int
+    t : int
         Length in seconds.
     f : int
         Frequency of sine tone.
     level : int/float
         Level in dB.
-    plot: bool
+    plot : bool
         Plot the sine tone.
     play : bool
         Play the sine tone.
-        
-    Returns 
-    ----------
-    
-    zvuk : ndarray
-        Generated sine tone.        
-    """ 
-    t = np.arange(0,T,1/fs)
-    zvuk = np.sin(2*np.pi*f*t)
-    zvuk = normalise(zvuk, level)
 
+    Returns
+    ----------
+    wav : ndarray
+        Generated sine tone.
+    """
+    t = np.arange(0, t, 1/fs)
+    wav = np.sin(2*np.pi*f*t)
+    wav = normalise(wav, level)
     if plot:
         plt.figure()
-        plt.plot(t,zvuk)
+        plt.plot(t, wav)
         plt.grid()
-    
     if play:
-        wavfile.write('audio/sinus.wav', fs, 
-                      np.array(zvuk*2**15, dtype='int16'))
-        os.system('play audio/sinus.wav')
-    
-    return zvuk
+        wavfile.write('audio/sine.wav', fs,
+                      np.array(wav * 2**15, dtype='int16'))
+        os.system('play audio/sine.wav')
+    return wav
 
-def get_spectrum(fs, wav, Nfft=None, plot=False):
+
+def get_spectrum(fs, wav, n_fft=None, log=True, plot=False):
     """
     Calculate spectrum of signal.
-    
+
     Parameters
     ----------
     fs : int
         Sampling rate.
     wav : ndarray
         Input audio.
-    Nfft : int
+    n_fft : int
         Number of FFT bins to use.
     plot: bool
         Plot the spectrum.
-        
-    Returns 
+
+    Returns
     ----------
     f : ndarray
         Frequency of FFT bins in Hz.
-    
+
     wav_amp : ndarray
-        Amplitude specrum in dB.   
+        Amplitude specrum.
     """
-    N = wav.size
-    if Nfft is None:
-        Nfft = int(2**np.ceil(np.log(N)/np.log(2)))
-    wav_fft = fftp.fft(wav, Nfft)
-    wav_fft = wav_fft / N
-    wav_fft = wav_fft[0:int(Nfft/2+1)]
-    wav_fft[1:int(Nfft/2)] = 2 * wav_fft[1:int(Nfft/2)] 
+    n = wav.size
+    if n_fft is None:
+        n_fft = np.ceil(np.log2(n))
+        n_fft = int(2**n_fft)
+    n_keep = int(n_fft/2) + 1
+    wav_fft = fft.fft(wav, n_fft)
     wav_amp = np.abs(wav_fft)
-    eps = np.finfo(float).eps
-    wav_amp[wav_amp < eps] = eps
-    wav_amp = 20*np.log10(wav_amp)
-    wav_ph = np.angle(wav_fft)
-    wav_ph = np.unwrap(wav_ph)
-    f = np.linspace(0, fs/2, Nfft/2+1)
+    wav_amp = wav_amp / n
+    wav_amp = wav_amp[:n_keep]
+    wav_amp[1:-1] = 2*wav_amp[1:-1]
+    if log:
+        eps = np.finfo(float).eps
+        wav_amp[wav_amp < eps] = eps
+        wav_amp = 20*np.log10(wav_amp)
+    f = np.linspace(0, fs/2, n_keep)
     if plot:
         plt.figure()
         plt.plot(f, wav_amp)
-        plt.xscale('log')
-        plt.axis((20, fs/2, -100, 0))
+        plt.axis([0, fs/2, -100, 0])
         plt.grid()
-        
     return f, wav_amp
-    
-def get_spectrogram(fs, wav, N=2048, win='hamming', plot=True):
+
+
+def get_spectrogram(fs, wav, n_win=2048, win_type='hamming',
+                    spec=True, plot=True):
     """
     Calculate STFT spectrogram of signal.
-    
+
     Parameters
     ----------
     fs : int
         Sampling rate.
     wav : ndarray
         Input audio.
-    N : int
+    n_win : int
         Window length used in analysis.
-    win : str
+    win_type : str
         Window type to use.
-    plot: bool
+    plot : bool
         Plot the spectrogram.
-        
-    Returns 
+
+    Returns
     ----------
     t_frames : ndarray
-        Time locations of frame centers. 
+        Time locations of frame centers.
     f_frame : ndarray
         Frequency of FFT bins in Hz.
-    frame_specs : ndarray
-        Spectrogram in dB.
     frames : ndarray
-        Frames extracted from audio file.
+        Frames extracted from audio file or spectrogram in dB based on spec.
     """
-    Nh = int(N/2)
-    H = Nh
-    w = sig.get_window(win, N)
-    pad = np.zeros(Nh)
-    wav_pad = np.r_[pad, wav, pad]
-    poz = 0
-    while poz <= wav_pad.size - N:
-        frame = wav_pad[poz:poz+N]
-        frame = frame * w
-        f_frame, frame_spec = get_spectrum(fs, frame, N)
-        if poz == 0:
-            frames =frame[:,np.newaxis]
-            frame_specs =frame_spec[:,np.newaxis]
+    win = sig.get_window(win_type, n_win)
+    n_half = n_win // 2
+    n_hop = n_half
+    pad = np.zeros(n_half)
+    wav_pad = np.concatenate((pad, wav, pad))
+    pos = 0
+    while pos <= wav_pad.size - n_win:
+        frame = wav_pad[pos: pos+n_win]
+        frame = frame * win
+        if spec:
+            f_frame, frame = get_spectrum(fs, frame, n_fft=n_win)
         else:
-            frames = np.hstack((frames, frame[:,np.newaxis]))
-            frame_specs = np.hstack((frame_specs, 
-                                     frame_spec[:,np.newaxis]))
-        poz += H
-        
-    no_frames = frame_specs.shape[1]
-    t_frames = np.arange(no_frames) * H / fs
+            f_frame = np.arange(frame.size)
+        frame = frame[:, np.newaxis]
+        if pos == 0:
+            frames = frame
+        else:
+            frames = np.concatenate((frames, frame), axis=1)
+        pos += n_hop
+    n_frame = frames.shape[1]
+    t_frame = np.arange(n_frame) * n_hop/fs
     if plot:
         plt.figure()
-        plt.imshow(frame_specs, 
-                   extent=[0, t_frames[-1], 0, f_frame[-1]],
-                   aspect='auto',
-                   origin='lower',
-                   vmin=-100,
-                   vmax=0,
-                   cmap='viridis')
-        
-    return t_frames, f_frame, frame_specs, frames
+        plt.imshow(frames, aspect='auto', origin='lower',
+                   extent=[0, t_frame[-1], 0, f_frame[-1]],
+                   vmin=-100, vmax=100)
+        plt.colorbar()
+    return t_frame, f_frame, frames
+
 
 def overlapadd(frames):
     """
     Overlap and add frames. Overlap is fixed at 50%.
-    
+
     Parameters
     ----------
     frames : ndarray
         Frames of signal.
-        
-    Returns 
+
+    Returns
     ----------
     wav : ndarray
-        Output signal. 
+        Output signal.
     """
-    win_s = frames_filt.shape[0]
-    no_frames = frames_filt.shape[1]
+    win_s = frames.shape[0]
+    no_frames = frames.shape[1]
     H = int(win_s / 2)
     wav = np.zeros((no_frames+1)*H)
     pos = 0
-    for frame_filt in frames_filt.T:
+    for frame_filt in frames.T:
         wav[pos:pos+win_s] = wav[pos:pos+win_s] + frame_filt
         pos += H
-        
-    return wav_filt
+
+    return wav

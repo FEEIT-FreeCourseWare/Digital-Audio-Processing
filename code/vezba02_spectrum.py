@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 by Branislav Gerazov
+# Copyright 2017 - 2019 by Branislav Gerazov
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2017
+#   Branislav Gerazov, March 2017 - 2019
 
 """
 Digital Audio Systems
@@ -15,66 +15,57 @@ Excercise 02: Spectrum.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
+from scipy import fftpack as fft
 import os
 
-#%% load audio
-filename = 'audio/Viluska_440Hz.wav'
-fs, viluska = wavfile.read(filename)
-#os.system('play ' + filename)
+# %% load audio
+audio_path = 'audio/'
+file_name = 'viluska.wav'  # tone A
+fs, wav = wavfile.read(audio_path + file_name)
+os.system('play ' + audio_path + file_name)
 
-#%% convert to float, generate t vector 
-viluska = viluska / 2**15
-N = viluska.size
-t = np.arange(0, N) / fs
+# %% convert to -1 to 1 float, generate t vector
+wav = wav / 2**15
+n = wav.size
+ts = 1 / fs
+t = np.arange(0, n) * ts
 
-#%% plot
-plt.figure(figsize=(15,5))
-plt.subplot(121)  # 1x2 графици, прв график
-plt.plot(t, viluska)
+# %% plot
+plt.figure(figsize=(15, 5))
+plt.plot(t, wav)
 plt.grid()
-plt.axis([0, t[-1], -1, 1])  # [xmin, xmax, ymin, ymax]
-plt.subplot(122)  # 1x2 графици, втор график
-plt.plot(t, viluska)
-plt.grid()
-plt.axis([0.5, 0.55, -1, 1])  # [xmin, xmax, ymin, ymax]
 
-#%% get spectrum
-from scipy import fftpack as ffp
+# %% get spectrum
+x = np.ceil(np.log2(n))
+n_fft = int(2**x)
+wav_fft = fft.fft(wav, n_fft)
 
-Nfft = 2**np.ceil(np.log(N)/np.log(2))
-Nh = Nfft / 2
+wav_amp = np.abs(wav_fft)
+wav_amp = wav_amp / n
+n_keep = int(n_fft/2) + 1
+wav_amp = wav_amp[: n_keep]
+wav_amp[1: -1] = 2 * wav_amp[1: -1]
 
-viluska_fft = ffp.fft(viluska, Nfft)
-viluska_fft = viluska_fft[0:Nh+1]
-viluska_amp = np.abs(viluska_fft) /N
-viluska_amp[1:-1] = viluska_amp[1:-1] * 2
-viluska_log = 20*np.log10(viluska_amp)
-viluska_ph = np.angle(viluska_fft)
-viluska_ph = np.unwrap(viluska_ph)
+wav_pha = np.angle(wav_fft)
+wav_pha = np.unwrap(wav_pha)
+wav_pha = wav_pha[: n_keep]
 
-#%% FFT bin frequencies
-#w = np.arange(0, 2*pi, 2*pi/N)
-#f = np.arange(0, Nh+1) / Nfft *fs
-w = np.linspace(0, np.pi, Nfft/2+1)
-f = np.linspace(0, fs/2, Nfft/2+1)
+# %% FFT bin frequencies
+# whole spectrum
+# w = np.linspace(0, 2*np.pi, n_fft, endpoint=False)
+# f = np.linspace(0, fs, n_fft, endpoint=False)
+# kept spectrum
+# w = np.linspace(0, np.pi, n_keep)
+f = np.linspace(0, fs/2, n_keep)
 
-#%% plot
+# %% plot
 plt.figure()
-plt.subplot(311)
-plt.plot(t, viluska)
-plt.axis([0, t[-1], -1, 1])  # [xmin, xmax, ymin, ymax]
+plt.subplot(211)
+plt.plot(f, wav_amp)
 plt.grid()
-plt.subplot(312)
-plt.plot(f, viluska_amp)
-plt.axis([0, f[-1], np.min(viluska_amp), np.max(viluska_amp)])
-#plt.plot(w_shift, np.fft.fftshift(viluska_amp))
-plt.grid()
-plt.subplot(313)
-plt.plot(f, viluska_ph)
-plt.axis([0, f[-1], np.min(viluska_ph), np.max(viluska_ph)])
-##plt.plot(w_shift, np.fft.fftshift(viluska_ph))
+plt.subplot(212)
+plt.plot(f, wav_pha)
 plt.grid()
