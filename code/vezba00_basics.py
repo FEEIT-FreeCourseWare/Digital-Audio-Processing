@@ -15,7 +15,6 @@ Excercise 00: Basics of working with sound.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.io import wavfile

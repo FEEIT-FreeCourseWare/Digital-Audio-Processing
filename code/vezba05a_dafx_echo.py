@@ -1,7 +1,6 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
-# Copyright 2016 by Branislav Gerazov
+# Copyright 2016 - 2019 by Branislav Gerazov
 #
 # See the file LICENSE for the license associated with this software.
 #
@@ -15,16 +14,13 @@ Excercise 05: Digital Audio Effects: Echo.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
-from math import pi
 from scipy.io import wavfile
 from scipy import signal as sig
-import copy as cp
 import os
 
-#%% define parameters
+# %% define parameters
 # FIR echo
 fs = 22050
 Dt = 0.5  # sec
@@ -39,7 +35,7 @@ D0t = 0.2
 D0 = int(D0t*fs)  # samples
 D1t = 0.3
 D1 = int(D1t*fs)  # samples
-b_fir_mul = cp.copy(b_fir)
+b_fir_mul = b_fir.copy()
 b_fir_mul[D0] = 0.4
 b_fir_mul[D1] = 0.3
 
@@ -52,11 +48,11 @@ a_iir[D] = b_D
 b_ap = np.zeros(D+1)
 b_ap[0] = b_D
 b_ap[D] = 1
-a_ap = cp.copy(a_iir)
+a_ap = a_iir.copy()
 
 # FIR
 w, H_fir = sig.freqz(b_fir, [1])
-f = w / pi * fs/2
+f = w / np.pi * fs/2
 H_fir = 20*np.log10(np.abs(H_fir))
 
 # FIR_mul
@@ -75,7 +71,7 @@ h_ap = sig.lfilter(b_ap, a_ap, x)
 w, H_ap = sig.freqz(b_ap, a_ap)
 H_ap = 20*np.log10(np.abs(H_ap))
 
-#%% plot
+# %% plot
 t = np.arange(0, b_fir.size/fs, 1/fs)
 plt.figure()
 plt.subplot(421)
@@ -116,24 +112,21 @@ plt.plot(f, H_ap)
 plt.axis([0, 1000, -7, 7])
 plt.grid()
 
-#%% apply echo
+# %% apply echo
 fs, wav = wavfile.read('audio/Pato_22K.wav')
 wav_eho = sig.lfilter(b_fir, [1], wav)
 wav_eho = sig.lfilter(b_fir_mul, [1], wav)
 wav_eho_iir = sig.lfilter([1], a_iir, wav)
 wav_eho_ap = sig.lfilter(b_ap, a_ap, wav)
 
-#%% play
+# %% play
 os.system('play audio/Pato_22K.wav')
-#%%
 wavfile.write('audio/Pato_eho_fir.wav', fs, np.array(wav_eho, dtype='int16'))
 os.system('play audio/Pato_eho_fir.wav')
-#%%
-wavfile.write('audio/Pato_eho_fir_mul.wav', fs, np.array(wav_eho, dtype='int16'))
+wavfile.write('audio/Pato_eho_fir_mul.wav', fs, np.array(wav_eho,
+                                                         dtype='int16'))
 os.system('play audio/Pato_eho_fir_mul.wav')
-#%%
 wavfile.write('audio/Pato_eho_iir.wav', fs, np.array(wav_eho, dtype='int16'))
 os.system('play audio/Pato_eho_iir.wav')
-#%%
 wavfile.write('audio/Pato_eho_ap.wav', fs, np.array(wav_eho, dtype='int16'))
 os.system('play audio/Pato_eho_ap.wav')
