@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
@@ -9,7 +8,7 @@
 #   Branislav Gerazov, March 2017 - 2019
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 03: Spectrogram.
 
@@ -21,14 +20,14 @@ from matplotlib import pyplot as plt
 from scipy.io import wavfile
 from scipy import signal as sig
 import os
-import das
+import dap
 
 # %% load audio
 fs, wav = wavfile.read('audio/zvona2.wav')
 os.system('play audio/zvona2.wav')
 wav = wav / 2**15
 t = np.arange(0, wav.size/fs, 1/fs)
-f, wav_amp = das.get_spectrum(fs, wav, plot=True)
+f, wav_amp = dap.get_spectrum(fs, wav, plot=True)
 
 # %% aliasing
 # wavfile.write('audio/Zvona_alias.wav', fs/4,
@@ -50,7 +49,7 @@ pos = 0
 spectrogram = None
 while pos <= wav_pad.size - n_win:
     frame = wav_pad[pos: pos+n_win]
-    f_frame, frame_spec = das.get_spectrum(fs, wav, n_fft=n_win)
+    f_frame, frame_spec = dap.get_spectrum(fs, wav, n_fft=n_win)
     frame_spec = frame_spec[:, np.newaxis]
     if spectrogram is None:
         spectrogram = frame_spec
@@ -73,12 +72,12 @@ cbar.ax.set_ylabel('Amplitude [dB]')
 # plt.axis([0, t[-1], 0, 10000])
 
 # %% spectrograms for different n_win
-das.get_spectrogram(fs, wav, 256, win_type='hann')
-das.get_spectrogram(fs, wav, 2048, win_type='hann')
-das.get_spectrogram(fs, wav, 16384, win_type='hann')
+dap.get_spectrogram(fs, wav, 256, win_type='hann')
+dap.get_spectrogram(fs, wav, 2048, win_type='hann')
+dap.get_spectrogram(fs, wav, 16384, win_type='hann')
 
 # %% spectrograms for different win_type
-das.get_spectrogram(fs, wav, 2048, win_type='boxcar')
-das.get_spectrogram(fs, wav, 2048, win_type='hann')
-das.get_spectrogram(fs, wav, 2048, win_type='hamming')
-das.get_spectrogram(fs, wav, 2048, win_type='blackmanharris')
+dap.get_spectrogram(fs, wav, 2048, win_type='boxcar')
+dap.get_spectrogram(fs, wav, 2048, win_type='hann')
+dap.get_spectrogram(fs, wav, 2048, win_type='hamming')
+dap.get_spectrogram(fs, wav, 2048, win_type='blackmanharris')

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2017
+#   Branislav Gerazov, March 2017 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 04: FIR and IIR filter demo.
 
@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 from scipy.io import wavfile
 import os
 from scipy import signal as sig
-import das
+import dap
 
 # %% load wav
 folder = 'audio/'
@@ -30,7 +30,7 @@ wav = wav / 2**15
 t = np.arange(wav.shape[0]) / fs
 os.system('play '+folder+filename)
 plt.plot(t, wav)
-das.get_spectrogram(fs, wav)
+dap.get_spectrogram(fs, wav)
 
 # %% FIR filters
 # low pass
@@ -67,9 +67,9 @@ plt.plot(t, wav_lp_fir)
 plt.plot(t, wav_lp_filtfilt)
 
 # %% plot spectrums
-f, wav_spec = das.get_spectrum(fs, wav)
-f, wav_lp_spec = das.get_spectrum(fs, wav_lp_fir)
-f, wav_lp_spec_filtfilt = das.get_spectrum(fs, wav_lp_filtfilt)
+f, wav_spec = dap.get_spectrum(fs, wav)
+f, wav_lp_spec = dap.get_spectrum(fs, wav_lp_fir)
+f, wav_lp_spec_filtfilt = dap.get_spectrum(fs, wav_lp_filtfilt)
 
 plt.figure()
 plt.plot(f, wav_spec)
@@ -117,10 +117,10 @@ plt.plot(t, wav_lp_iir)
 plt.plot(t, wav_lp_iir_filtfilt)
 
 # %% plot spectrums
-f, wav_spec = das.get_spectrum(fs, wav)
-f, wav_lp_spec_iir = das.get_spectrum(fs, wav_lp_iir)
+f, wav_spec = dap.get_spectrum(fs, wav)
+f, wav_lp_spec_iir = dap.get_spectrum(fs, wav_lp_iir)
 f, wav_lp_spec_iir_filtfilt = \
-            das.get_spectrum(fs, wav_lp_iir_filtfilt)
+            dap.get_spectrum(fs, wav_lp_iir_filtfilt)
 plt.figure()
 plt.plot(f, wav_spec)
 plt.plot(f, wav_lp_spec, alpha=.7)

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, Mar 2017
+#   Branislav Gerazov, Mar 2017 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 04: Notch filter.
 
@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 from scipy.io import wavfile
 import os
 from scipy import signal as sig
-import das
+import dap
 
 # %% load wav
 folder = 'audio/'
@@ -36,7 +36,7 @@ brum = np.sin(2*np.pi*50*t) + \
 
 # %% add brum
 wav_brum = wav + .02*brum
-wav_brum = das.normalise(wav_brum)
+wav_brum = dap.normalise(wav_brum)
 
 # %% plot
 plt.figure()
@@ -65,12 +65,12 @@ plt.grid('on')
 wav_notch = sig.lfilter(b_notch, a_notch, wav_brum)
 
 # %% compare spectrograms
-das.get_spectrogram(fs, wav, 256)
-das.get_spectrogram(fs, wav_notch, 256)
+dap.get_spectrogram(fs, wav, 256)
+dap.get_spectrogram(fs, wav_notch, 256)
 
 # %% compare spectrums
-f, wav_spec = das.get_spectrum(fs, wav_brum)
-f, wav_notch_spec = das.get_spectrum(fs, wav_notch)
+f, wav_spec = dap.get_spectrum(fs, wav_brum)
+f, wav_notch_spec = dap.get_spectrum(fs, wav_notch)
 
 plt.figure()
 plt.plot(f, wav_spec)

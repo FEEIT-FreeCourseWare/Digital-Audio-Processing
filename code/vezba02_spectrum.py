@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
@@ -9,7 +8,7 @@
 #   Branislav Gerazov, March 2017 - 2019
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 02: Spectrum.
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, Mar 2017
+#   Branislav Gerazov, Mar 2017 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 04: Filter bank equalization.
 
@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 from scipy.io import wavfile
 import os
 from scipy import signal as sig
-import das
+import dap
 
 # %% load wav
 folder = 'audio/'
@@ -33,24 +33,28 @@ os.system('play '+folder+filename)
 order = 7
 f_l = 400
 f_h = 4000
-b_lp, a_lp = sig.iirfilter(order, f_l/(fs/2), btype='lowpass', ftype='butter')
+b_lp, a_lp = sig.iirfilter(
+    order, f_l, btype='lowpass', ftype='butter', fs=fs
+    )
 
-b_bp, a_bp = sig.iirfilter(order, [f_l/(fs/2), f_h/(fs/2)],
-                           btype='bandpass', ftype='butter')
+b_bp, a_bp = sig.iirfilter(
+    order, [f_l), f_h], btype='bandpass', ftype='butter', fs=fs
+    )
 
-b_hp, a_hp = sig.iirfilter(order, f_h/(fs/2),
-                           btype='highpass', ftype='butter')
+b_hp, a_hp = sig.iirfilter(
+    order, f_h, btype='highpass', ftype='butter', fs=fs
+    )
 
 # %% plot freqz
-w, H_lp = sig.freqz(b_lp, a_lp)
-w, H_bp = sig.freqz(b_bp, a_bp)
-w, H_hp = sig.freqz(b_hp, a_hp)
+f, H_lp = sig.freqz(b_lp, a_lp, fs=fs)
+f, H_bp = sig.freqz(b_bp, a_bp, fs=fs)
+f, H_hp = sig.freqz(b_hp, a_hp, fs=fs)
 
 plt.figure()
-plt.plot(w/np.pi*fs/2, 20*np.log10(np.abs(H_lp)))
-plt.plot(w/np.pi*fs/2, 20*np.log10(np.abs(H_bp)))
-plt.plot(w/np.pi*fs/2, 20*np.log10(np.abs(H_hp)))
-plt.grid('on')
+plt.plot(f, 20*np.log10(np.abs(H_lp)))
+plt.plot(f, 20*np.log10(np.abs(H_bp)))
+plt.plot(f, 20*np.log10(np.abs(H_hp)))
+plt.grid(True)
 
 # %% filter signal
 wav_lp = sig.lfilter(b_lp, a_lp, wav)
@@ -69,16 +73,17 @@ g_hp = 10**(G_hp/20)
 # %% mix
 wav_out = wav_lp * g_lp + wav_bp * g_bp + wav_hp * g_hp
 
-wav_out = das.normalise(wav_out)
+wav_out = dap.normalise(wav_out)
 
 # %% play
-wavfile.write('audio/Mara_eq.wav', fs,
-              np.array(wav_out*2**15, dtype='int16'))
+wavfile.write(
+    'audio/Mara_eq.wav', fs, np.int16(wav_out*2**15)
+    )
 os.system('play audio/Mara_eq.wav')
 
 # %% compare to original
 os.system('play audio/Mara.wav')
 
 # %% compare spectrograms
-das.get_spectrogram(fs, wav)
-das.get_spectrogram(fs, wav_out)
+dap.get_spectrogram(fs, wav)
+dap.get_spectrogram(fs, wav_out)

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2017
+#   Branislav Gerazov, March 2017 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 04: Filter Design using combination of DFT and window methods.
 
@@ -20,7 +20,7 @@ from scipy.io import wavfile
 from scipy import fftpack as fftp
 from scipy import signal as sig
 import os
-import das
+import dap
 
 # %% load audio
 folder = 'audio/'
@@ -69,8 +69,8 @@ plt.grid()
 plt.axis([n_ffth-1.5*n_h, n_ffth+1.5*n_h, -0.1, 0.25])
 
 plt.subplot(212)
-f, h_lp_spec = das.get_spectrum(fs, h_lp, n_fft)
-f, h_rect_spec = das.get_spectrum(fs, h_rect, n_fft)
+f, h_lp_spec = dap.get_spectrum(fs, h_lp, n_fft)
+f, h_rect_spec = dap.get_spectrum(fs, h_rect, n_fft)
 plt.plot(f, h_lp_spec - np.max(h_lp_spec))
 plt.plot(f, h_rect_spec - np.max(h_rect_spec))
 plt.grid()

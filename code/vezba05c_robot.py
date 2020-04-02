@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2019 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, May 2019
+#   Branislav Gerazov, May 2019 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 05: Digital Audio Effects: Robotiser.
 
@@ -18,9 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy import signal as sig
-from scipy import fftpack as fft
+from scipy import fftpack as fp
 import os
-import das
 
 # %% load wave
 path = 'audio/'
@@ -46,11 +45,11 @@ while pos <= wav_pad.size - n_win:
     frame = wav_pad[pos : pos+n_win]
     frame = frame * win
     
-    frame_fft = fft.fft(frame, n_win)
+    frame_fft = fp.fft(frame, n_win)
     frame_amp = np.abs(frame_fft)
-    frame_ifft = fft.ifft(frame_amp)
+    frame_ifft = fp.ifft(frame_amp)
     frame_robot = frame_ifft.real
-    frame_robot = fft.fftshift(frame_robot)
+    frame_robot = fp.fftshift(frame_robot)
     
     wav_robot[pos : pos+n_win] += frame_robot * win
     

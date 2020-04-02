@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 #
-# Copyright 2017 - 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2017 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, Mar 2017
+#   Branislav Gerazov, Mar 2017 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
-Excercise 05: Digital Audio Effects: Robotiser.
+Excercise 05: Digital Audio Effects: Wah-Wah.
 
 @author: Branislav Gerazov
 """
@@ -20,7 +20,7 @@ from scipy.io import wavfile
 from scipy import signal as sig
 from scipy import fftpack as fft
 import os
-import das
+import dap
 
 # %% load wave
 path = 'audio/'
@@ -73,12 +73,12 @@ while pos <= wav_pad.size - n_win:
 
 # %% wav write and play
 wav_wah = 0.1*wav_pad + 0.9*wav_wah
-wav_wah = das.normalise(wav_wah, -3)
+wav_wah = dap.normalise(wav_wah, -3)
 wav_wah_int16 = wav_wah * 2**15
 wav_wah_int16 = wav_wah_int16.astype('int16')
 wavfile.write(path+file_name+'_wah.wav', fs, wav_wah_int16)
 os.system('play '+path+file_name+'_wah.wav')
 
 # %% plot spectrogram
-__ = das.get_spectrogram(fs, wav_pad, 2048, win_type='hann', plot=True)
-__ = das.get_spectrogram(fs, wav_wah, 2048, win_type='hann', plot=True)
+__ = dap.get_spectrogram(fs, wav_pad, 2048, win_type='hann', plot=True)
+__ = dap.get_spectrogram(fs, wav_wah, 2048, win_type='hann', plot=True)

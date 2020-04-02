@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2019 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, May 2019
+#   Branislav Gerazov, May 2019 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 07: Sound source classification.
 
@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 from scipy.io import wavfile
 from sklearn import neural_network
 from sklearn import metrics
-import das
+import dap
 
 # %% load data
 audio_path = '../audio/'
@@ -61,7 +61,7 @@ y_train = None
 y_test = None
 for i, (x_train_sig, x_test_sig) in enumerate(
         zip(x_train_sigs, x_test_sigs)):
-    __, __, spectrogram = das.get_spectrogram(
+    __, __, spectrogram = dap.get_spectrogram(
             fs, x_train_sig, n_win=256, plot=False)
     x_train_feats = spectrogram.T  # for sklearn
     mask_spectrogram = np.all(x_train_feats < -80, axis=1)
@@ -72,7 +72,7 @@ for i, (x_train_sig, x_test_sig) in enumerate(
     y_train_targets[:, i] = 1
 
     # same for test set
-    __, __, spectrogram = das.get_spectrogram(
+    __, __, spectrogram = dap.get_spectrogram(
             fs, x_test_sig, n_win=256, plot=False)
     x_test_feats = spectrogram.T  # for sklearn
     mask_spectrogram = np.all(x_test_feats < -80, axis=1)

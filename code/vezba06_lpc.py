@@ -1,34 +1,32 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
-# Copyright 2016 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2016 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, Apr 2016
+#   Branislav Gerazov, Apr 2016 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 06: Linear Predictive Coding.
 
 @author: Branislav Gerazov
 """
-from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
 from math import pi
 from scipy.io import wavfile
 from scipy import signal as sig
-import das
 from scikits.talkbox import lpc
+import dap
 
 #%% load wav
 fs, wav = wavfile.read('audio/glas_aaa.wav')
 wav = wav / 2**15
 # wav = wav * sig.hamming(wav.size)
-f, wav_spec = das.get_spectrum(wav, fs)
+f, wav_spec = dap.get_spectrum(wav, fs)
 
 #%% get LPC parameters
 a_lp, e, k = lpc(wav, 25)
@@ -36,7 +34,7 @@ b_inv = np.concatenate(([0],-a_lp[1:]))
 wav_est = sig.lfilter(b_inv,1, wav)
 wav_err = wav - wav_est
 G = e
-f, err_spec = das.get_spectrum(wav_err, fs)
+f, err_spec = dap.get_spectrum(wav_err, fs)
 
 #%% plot
 #plt.figure()

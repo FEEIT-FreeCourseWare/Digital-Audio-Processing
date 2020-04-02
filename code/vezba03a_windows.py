@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
-# Copyright 2016 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2016 - 2020
 #
-# See the file LICEnSE for the license associated with this software.
+# See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, March 2016
+#   Branislav Gerazov, March 2016 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 03: Windows.
 
@@ -17,24 +16,24 @@ Excercise 03: Windows.
 """
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy import fftpack as fft
+from scipy import fftpack as fp
 from scipy import signal as sig
 
 # %% plot window and its spectrum
 # Hamming
 m = 512  # analysis range
 n = 64  # window length
-Mh = m/2
-nh = n/2
+mh = m // 2
+nh = n // 2
 
 win = np.zeros(m)
-win[Mh-nh:Mh+nh] = sig.get_window('hamming', n)
-win_spec = fft.fft(win, m)
+win[mh - nh: mh + nh] = sig.get_window('hamming', n)
+win_spec = fp.fft(win, m)
 win_spec = np.abs(win_spec) / n
-eps = np.finfo(float).eps
+eps = 1e-8
 win_spec[win_spec < eps] = eps
 win_spec = 20 * np.log10(win_spec)
-win_spec = fft.fftshift(win_spec)
+win_spec = fp.fftshift(win_spec)
 
 # %% plot
 plt.figure(figsize=(12, 4))

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #
-# Copyright 2019 by Branislav Gerazov
+# Copyright by Branislav Gerazov 2019 - 2020
 #
 # See the file LICENSE for the license associated with this software.
 #
 # Author(s):
-#   Branislav Gerazov, May 2019
+#   Branislav Gerazov, May 2019 - 2020
 
 """
-Digital Audio Systems
+Digital Audio Processing
 
 Excercise 07: Perceptron.
 
